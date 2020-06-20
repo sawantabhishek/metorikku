@@ -4,4 +4,5 @@
 # Allow files and directories
 !/docker/**
 !/target/scala-2.11/*.jar
+!/target/scala-2.12/*.jar
 !/examples/**

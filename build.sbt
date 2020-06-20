@@ -17,17 +17,15 @@ developers := List(
   Developer(id="shirbr", name="Shir Bromberg", email="", url=url("http://www.yotpo.com"))
 )
 
-scalaVersion := "2.11.12"
-val sparkVersion = Option(System.getProperty("sparkVersion")).getOrElse("2.4.5")
-val jacksonVersion = "2.9.9"
+scalaVersion := "2.12.11"
+val sparkVersion = Option(System.getProperty("sparkVersion")).getOrElse("3.0.0")
+val jacksonVersion = "2.10.0"
 
 lazy val excludeJpountz = ExclusionRule(organization = "net.jpountz.lz4", name = "lz4")
 lazy val excludeNetty = ExclusionRule(organization = "io.netty", name = "netty")
 lazy val excludeNettyAll = ExclusionRule(organization = "io.netty", name = "netty-all")
 lazy val excludeAvro = ExclusionRule(organization = "org.apache.avro", name = "avro")
 lazy val excludeSpark = ExclusionRule(organization = "org.apache.spark")
-lazy val excludeFasterXML = ExclusionRule(organization = "com.fasterxml.jackson.module", name= "jackson-module-scala_2.12")
-lazy val excludeMetricsCore = ExclusionRule(organization = "io.dropwizard.metrics", name= "metrics-core")
 lazy val excludeLog4j = ExclusionRule(organization = "org.apache.logging.log4j")
 lazy val excludeParquet = ExclusionRule(organization = "org.apache.parquet")
 
@@ -36,58 +34,47 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-mllib" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-hive" % sparkVersion % "provided",
-  "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion % "provided" excludeAll(excludeJpountz),
+  "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
   "org.apache.spark" %% "spark-avro" % sparkVersion % "provided",
-  "com.datastax.spark" %% "spark-cassandra-connector" % "2.4.2",
-  "com.holdenkarau" %% "spark-testing-base" % "2.4.3_0.12.0" % "test",
-  "com.github.scopt" %% "scopt" % "3.6.0",
-  "RedisLabs" % "spark-redis" % "0.3.2",
-  "org.json4s" %% "json4s-native" % "3.5.2",
-  "io.netty" % "netty-all" % "4.1.32.Final",
-  "io.netty" % "netty" % "3.10.6.Final",
-  "com.google.guava" % "guava" % "16.0.1",
-  "com.typesafe.play" %% "play-json" % "2.6.2",
-  "com.databricks" %% "spark-redshift" % "3.0.0-preview1" excludeAll excludeAvro,
-  "com.amazon.redshift" % "redshift-jdbc42" % "1.2.1.1001",
-  "com.segment.analytics.java" % "analytics" % "2.0.0",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6",
-  "org.scala-lang" % "scala-compiler" % "2.11.12",
+
+  "com.holdenkarau" %% "spark-testing-base" % "2.4.5_0.14.0" % "test" excludeAll excludeSpark,
+
+  "com.github.scopt" %% "scopt" % "3.7.1",
+  "org.scala-lang" % "scala-library" % scalaVersion.value,
+  "com.typesafe.play" %% "play-json" % "2.9.0",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
   "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
   "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion,
-  "com.groupon.dse" % "spark-metrics" % "2.0.0" excludeAll excludeMetricsCore,
-  "org.apache.commons" % "commons-text" % "1.6",
-  "org.influxdb" % "influxdb-java" % "2.14",
+  "org.apache.commons" % "commons-text" % "1.8",
+  "org.influxdb" % "influxdb-java" % "2.19",
+  // Wait for https://github.com/spark-redshift-community/spark-redshift/pull/72
+  //  "io.github.spark-redshift-community" %% "spark-redshift" % "4.0.1",
+  //  "com.databricks" %% "spark-redshift" % "3.0.0-preview1" excludeAll excludeAvro,
+  "com.segment.analytics.java" % "analytics" % "2.1.1" % "provided",
+  "com.amazon.redshift" % "redshift-jdbc42" % "1.2.41.1065" % "provided",
+  "com.datastax.spark" %% "spark-cassandra-connector" % "3.0.0-alpha2" % "provided",
+  "com.redislabs" %% "spark-redis" % "2.5.0" % "provided",
   "org.apache.kafka" %% "kafka" % "2.2.0" % "provided",
-  "za.co.absa" % "abris_2.11" % "3.1.1"  % "provided" excludeAll(excludeAvro, excludeSpark),
-  "org.apache.hudi" %% "hudi-spark-bundle" % "0.5.2-incubating" % "provided" excludeAll excludeFasterXML,
+  "za.co.absa" %% "abris" % "3.2.0"  % "provided" excludeAll(excludeAvro, excludeSpark),
+  "org.apache.hudi" %% "hudi-spark-bundle" % "0.5.3" % "provided",
   "org.apache.parquet" % "parquet-avro" % "1.10.1" % "provided",
   "org.apache.avro" % "avro" % "1.8.2" % "provided",
-  "org.apache.hive" % "hive-jdbc" % "2.3.3" % "provided" excludeAll(excludeNetty, excludeNettyAll, excludeLog4j, excludeParquet),
-  "org.apache.hadoop" % "hadoop-aws" % "2.7.3" % "provided"
+  "org.apache.hadoop" % "hadoop-aws" % "2.7.4" % "provided"
 )
-
-// Temporary fix for https://github.com/databricks/spark-redshift/issues/315#issuecomment-285294306
-dependencyOverrides += "com.databricks" %% "spark-avro" % "4.0.0"
-dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
-dependencyOverrides += "com.fasterxml.jackson.module" % "jackson-module-scala" % jacksonVersion
-dependencyOverrides += "org.apache.avro" %% "avro" % "1.8.2"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("public"),
   Resolver.bintrayRepo("spark-packages", "maven"),
-  "redshift" at "http://redshift-maven-repository.s3-website-us-east-1.amazonaws.com/release",
-  "confluent" at "http://packages.confluent.io/maven/"
+  "redshift" at "https://s3.amazonaws.com/redshift-maven-repository/release",
+  "confluent" at "https://packages.confluent.io/maven/"
 )
 
 fork := true
 javaOptions in Test ++= Seq("-Dspark.master=local[*]", "-Dspark.sql.session.timeZone=UTC", "-Duser.timezone=UTC")
-scalacOptions += "-target:jvm-1.8"
-javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
 // Assembly settings
 Project.inConfig(Test)(baseAssemblySettings)
