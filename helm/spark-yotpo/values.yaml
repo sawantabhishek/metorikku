@@ -34,6 +34,13 @@ sparkConf:
   spark.serializer: org.apache.spark.serializer.KryoSerializer
   spark.sql.hive.convertMetastoreParquet: false
   spark.sql.legacy.allowCreatingManagedTableUsingNonemptyLocation: true
+historyServer:
+  enabled: false
+  conf:
+    spark.eventLog.enabled: true
+    spark.eventLog.dir: s3://event-log-bucket
+    spark.hadoop.fs.s3a.access.key: ${AWS_ACCESS_KEY_ID}
+    spark.hadoop.fs.s3a.secret.key: ${AWS_SECRET_ACCESS_KEY}
 hiveMetaStore:
   enabled: false
   conf:
